@@ -109,12 +109,10 @@ def main(ser_add, dev_name):
 
     #write a value of 0x1B to register address 0x9
     try:
-        reg_access = dev_ad7746.debug_attrs["direct_reg_access"].value = "0x9 0x1B"
+        reg_access = dev_ad7746._ctrl.debug_attrs["direct_reg_access"].value = "0x9 0x1B"
     except Exception as e:
         print("Device Error: " + str(e))
         sys.exit()
-
-    #There are some issues here, unable to access the debug attributes of the device, only the channels! 
 
     input("\nMeasure the voltage at P14 again! Then press enter to continue.")
     print("If the measured voltage was around 1.7 volts, enter P. Otherwise, enter F.\n")
