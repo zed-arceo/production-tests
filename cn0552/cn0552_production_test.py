@@ -39,7 +39,8 @@ def main(COMPORT_number, dev_name):
         dev_ad7746 = adi.ad7746(uri="serial:" + COMPORT_number + ",115200,8n1", device_name=dev_name)
         print("Connected with CN0552 context at %s" % (COMPORT_number))
     except:
-        print("No Device Found. Please make sure that your COM PORT number is correct.")
+        print("No Device Found. Please make sure that your COM PORT number is correct and try again.")
+        input("")
         sys.exit()
 
     def cap_channels(dev_channel, channel_name):
@@ -60,9 +61,9 @@ def main(COMPORT_number, dev_name):
 
         # I'd set the range from 2pF to 3pF, the pin headers contribute to the measured capacitance around 0.5pF
         if (2.0 < meas_cap < 3.0):
-            print("\n\t" + channel_name + " is GOOD!\n")
+            print("\t" + channel_name + " is GOOD!\n")
         else:
-            print("\n\t" + channel_name + " FAILS!\n")
+            print("\t" + channel_name + " FAILS!\n")
             failed_tests.append(channel_name + " out of range")
 
 
@@ -81,10 +82,8 @@ def main(COMPORT_number, dev_name):
     cap_channels("capacitance1", "Channel 2")
 
     # Extended Range Test
-    input("Starting Extended Range Test! Measure the voltage at P14 then press enter to continue \n")
-    input("The measured voltage must be around 3.1volts, once done measuring, press enter.\n")
-
-    print("\nExtended Range Test\n")
+    input("Extended Range Test! Press enter to continue... \n")
+    print("\nStarting Extended Range Test...\n")
 
     #write a value of 0x1B to register address 0x9
     try:
@@ -93,8 +92,8 @@ def main(COMPORT_number, dev_name):
         print("Device Error: " + str(e))
         sys.exit()
 
-    input("\nMeasure the voltage at P14 again! Then press enter to continue.")
-    print("If the measured voltage was around 1.7 volts, enter P. Otherwise, enter F.\n")
+    input("\nMeasure the voltage at P14! Then press enter to continue.")
+    print("If the measured voltage is in the range from 1.65 to 1.75 volts, enter P. Otherwise, enter F.")
     x = input("")
     if (x == "P"):
         print("\nExtended Range Test GOOD!\n")
@@ -102,6 +101,7 @@ def main(COMPORT_number, dev_name):
         print("\nExtended Range Test Failed\n")
         failed_tests.append("Extended Range Test Failed")
 
+    print("Summary Result: \n")
     if len(failed_tests) == 0:
         print("Board PASSES")
     else:
@@ -109,9 +109,19 @@ def main(COMPORT_number, dev_name):
         for fails in failed_tests:
             print(fails)
 
+    input("\nThe test was done. Press enter to continue and proceed to the next board!")
+
 if __name__ == '__main__':
 
-    COMPORT_number = "COM5" #Change this according to your device COM PORT number
-    dev_name = "ad7746"
+    my_com = input("\nPlease input your device COM Port number and press enter:\n")
 
-    main(COMPORT_number, dev_name)
+    if len(my_com) == 0:
+        print("You did not enter a valid COM Port number. Please try again.")
+        sys.exit()
+    else:
+        try:
+            COMPORT_number = my_com
+            dev_name = "ad7746"
+            main(COMPORT_number, dev_name)
+        except Exception as e:
+            print("Connection error: " + str(e))
