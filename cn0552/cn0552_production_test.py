@@ -33,76 +33,55 @@
 
 import sys
 
-def main(ser_add, dev_name):
+def main(COMPORT_number, dev_name):
     try:
         import adi
-        dev_ad7746 = adi.ad7746(uri=ser_add, device_name=dev_name)
-        print("AD7746")
+        dev_ad7746 = adi.ad7746(uri="serial:" + COMPORT_number + ",115200,8n1", device_name=dev_name)
+        print("Connected with CN0552 context at %s" % (COMPORT_number))
     except:
-        print("No Device Found")
+        print("No Device Found. Please make sure that your COM PORT number is correct.")
         sys.exit()
 
-    # Normal Range Test
-    input("\nStarting Production Test! Make sure the setup is done! \nPress enter to continue...")
+    def cap_channels(dev_channel, channel_name):
+        try:
+            raw_val = dev_ad7746.channel[dev_channel].raw
+        except Exception as e:
+            print("Device Error: " + str(e))
+            sys.exit()
+
+        try:
+            scale_val = dev_ad7746.channel[dev_channel].scale
+        except Exception as e:
+            print("Device Error: " + str(e))
+            sys.exit()
+
+        meas_cap = float(raw_val) * float(scale_val)
+        print("\tMeasured Capacitance: " + str(meas_cap) + " pF")
+
+        # I'd set the range from 2pF to 3pF, the pin headers contribute to the measured capacitance around 0.5pF
+        if (2.0 < meas_cap < 3.0):
+            print("\n\t" + channel_name + " is GOOD!\n")
+        else:
+            print("\n\t" + channel_name + " FAILS!\n")
+            failed_tests.append(channel_name + " out of range")
+
+
+    input("\nStarting Production Test! Verify test jig is connected properly! Press enter to continue...")
     failed_tests = []
-    print("\nNormal Range Test")
+
+    # Normal Range Test
+    print("\nStarting Normal Range Test...\n")
 
     # Channel 1 - CIN1(+) and EXCA pins 
     print("Channel 1\n")
-
-    try:
-        raw_val = dev_ad7746.channel["capacitance0"].raw
-        print("\tRaw: " + str(raw_val))
-    except Exception as e:
-        print("Device Error: " + str(e))
-        sys.exit()
-
-    try:
-         scale_val = dev_ad7746.channel["capacitance0"].scale
-         print("\tScale: " + str(scale_val))
-    except Exception as e:
-         print("Device Error: " + str(e))
-         sys.exit()
-
-    meas_cap = raw_val * scale_val
-    print("\tMeasured Capacitance: " + str(meas_cap) + " pF")
-
-    # I'd set the range from 2pF to 3pF, the pin headers contribute to the measured capacitance around 0.5pF
-    if (2.0 < meas_cap < 3.0):
-         print("\n\tChannel 1 is GOOD!\n")
-    else:
-        print("\n\tChannel 1 FAILS!\n")
-        failed_tests.append("Channel 1 out of range")
+    cap_channels("capacitance0", "Channel 1")
 
     # Channel 2 - CIN2(+) and EXCB pins 
     print("Channel 2\n")
-
-    try:
-        raw_val = dev_ad7746.channel["capacitance1"].raw
-        print("\tRaw: " + str(raw_val))
-    except Exception as e:
-        print("Device Error: " + str(e))
-        sys.exit()
-
-    try:
-        scale_val = dev_ad7746.channel["capacitance1"].scale
-        print("\tScale: " + str(scale_val))
-    except Exception as e:
-        print("Device Error: " + str(e))
-        sys.exit()
-
-    meas_cap = raw_val * scale_val
-    print("\tMeasured Capacitance: " + str(meas_cap) + " pF")
-
-    # I'd set the range from 2pF to 3pF, the pin headers contribute to the measured capacitance around 0.5pF
-    if (2.0 < meas_cap < 3.0):
-        print("\n\tChannel 2 is GOOD!\n")
-    else:
-        print("\n\tChannel 2 FAILS!\n")
-        failed_tests.append("Channel 2 out of range")
+    cap_channels("capacitance1", "Channel 2")
 
     # Extended Range Test
-    input("Starting Extended Range Test! Measure the voltage at P14 the press enter to continue \n")
+    input("Starting Extended Range Test! Measure the voltage at P14 then press enter to continue \n")
     input("The measured voltage must be around 3.1volts, once done measuring, press enter.\n")
 
     print("\nExtended Range Test\n")
@@ -132,7 +111,7 @@ def main(ser_add, dev_name):
 
 if __name__ == '__main__':
 
-    ser_add = "serial:COM5,115200,8n1"
+    COMPORT_number = "COM5" #Change this according to your device COM PORT number
     dev_name = "ad7746"
 
-    main(ser_add, dev_name)
+    main(COMPORT_number, dev_name)
