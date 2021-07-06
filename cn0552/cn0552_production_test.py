@@ -39,7 +39,7 @@ def main(COMPORT_number, dev_name):
         dev_ad7746 = adi.ad7746(uri="serial:" + COMPORT_number + ",115200,8n1", device_name=dev_name)
         print("Connected with CN0552 context at %s" % (COMPORT_number))
     except:
-        print("No Device Found. Please make sure that your COM PORT number is correct and try again.")
+        print("\nNo Device Found. Please make sure that your COM PORT number is correct and try again.")
         input("")
         sys.exit()
 
@@ -92,10 +92,10 @@ def main(COMPORT_number, dev_name):
         print("Device Error: " + str(e))
         sys.exit()
 
-    input("\nMeasure the voltage at P14! Then press enter to continue.")
-    print("If the measured voltage is in the range from 1.65 to 1.75 volts, enter P. Otherwise, enter F.")
-    x = input("")
-    if (x == "P"):
+    input("\nMeasure the voltage at P14 and press enter.")
+    print("\nPlease input the measured voltage:")
+    x = float(input(""))
+    if (1.65 < x < 1.75):
         print("\nExtended Range Test GOOD!\n")
     else:
         print("\nExtended Range Test Failed\n")
@@ -113,7 +113,9 @@ def main(COMPORT_number, dev_name):
 
 if __name__ == '__main__':
 
+    print("EVAL-CN0552-PMDZ Production Test")
     my_com = input("\nPlease input your device COM Port number and press enter:\n")
+    serial_num = input("\nPlease input the serial number of the board and press enter:\n")
 
     if len(my_com) == 0:
         print("You did not enter a valid COM Port number. Please try again.")
@@ -123,5 +125,6 @@ if __name__ == '__main__':
             COMPORT_number = my_com
             dev_name = "ad7746"
             main(COMPORT_number, dev_name)
+            
         except Exception as e:
             print("Connection error: " + str(e))
