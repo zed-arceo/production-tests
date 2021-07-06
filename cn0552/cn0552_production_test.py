@@ -71,19 +71,19 @@ def main(COMPORT_number, dev_name):
     failed_tests = []
 
     # Normal Range Test
-    print("\nStarting Normal Range Test...\n")
+    print("\nStarting Normal Range Test...")
 
     # Channel 1 - CIN1(+) and EXCA pins 
-    print("Channel 1\n")
+    print("Channel 1")
     cap_channels("capacitance0", "Channel 1")
 
     # Channel 2 - CIN2(+) and EXCB pins 
-    print("Channel 2\n")
+    print("Channel 2")
     cap_channels("capacitance1", "Channel 2")
 
     # Extended Range Test
-    input("Extended Range Test! Press enter to continue... \n")
-    print("\nStarting Extended Range Test...\n")
+    input("Normal Range test done. Press enter to continue... \n")
+    print("Starting Extended Range Test...")
 
     #write a value of 0x1B to register address 0x9
     try:
@@ -92,30 +92,31 @@ def main(COMPORT_number, dev_name):
         print("Device Error: " + str(e))
         sys.exit()
 
-    input("\nMeasure the voltage at P14 and press enter.")
-    print("\nPlease input the measured voltage:")
+    input("Measure the voltage at P14 and press enter.")
+    print("Please input the measured voltage:")
     x = float(input(""))
-    if (1.65 < x < 1.75):
+    if (1.65 <= x <= 1.75):
         print("\nExtended Range Test GOOD!\n")
     else:
         print("\nExtended Range Test Failed\n")
         failed_tests.append("Extended Range Test Failed")
 
-    print("Summary Result: \n")
+    print("***Summary Result***")
     if len(failed_tests) == 0:
-        print("Board PASSES")
+        print("    Board PASSES")
     else:
         print("Board Failed the following test:")
         for fails in failed_tests:
-            print(fails)
+            print("- " + fails)
 
-    input("\nThe test was done. Press enter to continue and proceed to the next board!")
+    input("\nThe test is done. Press enter to continue and proceed to the next board!")
 
 if __name__ == '__main__':
 
     print("EVAL-CN0552-PMDZ Production Test")
-    my_com = input("\nPlease input your device COM Port number and press enter:\n")
-    serial_num = input("\nPlease input the serial number of the board and press enter:\n")
+    my_com = input("\nInput your device COM Port number and press enter: ")
+    serial_num = input("Input the serial number of the board and press enter: ")
+    input("Make sure the COM port and serial number is correct before proceeding. Press enter.\n")
 
     if len(my_com) == 0:
         print("You did not enter a valid COM Port number. Please try again.")
@@ -125,6 +126,6 @@ if __name__ == '__main__':
             COMPORT_number = my_com
             dev_name = "ad7746"
             main(COMPORT_number, dev_name)
-            
+
         except Exception as e:
             print("Connection error: " + str(e))
