@@ -114,9 +114,7 @@ def main(COMPORT_number, dev_name):
 if __name__ == '__main__':
 
     print("EVAL-CN0552-PMDZ Production Test")
-    my_com = input("\nInput your device COM Port number and press enter: ")
-    serial_num = input("Input the serial number of the board and press enter: ")
-    input("Make sure the COM port and serial number is correct before proceeding. Press enter.\n")
+    my_com = input("\nInput your device COM Port name (ex. COM5) and press enter: ")
 
     if len(my_com) == 0:
         print("You did not enter a valid COM Port number. Please try again.")
